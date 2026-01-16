@@ -21,7 +21,7 @@ export default function PostPage(){
     const [socket, setSocket] = useState(null);
 
     useEffect(()=>{
-        fetch(`http://localhost:4000/post/${id}`)
+        fetch(`https://my-mern-blog-n6yk.onrender.com/post/${id}`)
             .then(res => res.json())
             .then(postInfo => {
                 setPostInfo(postInfo);
@@ -30,7 +30,7 @@ export default function PostPage(){
 
     useEffect(()=>{
         // 获取历史评论
-        fetch(`http://localhost:4000/post/${id}/comments`)
+        fetch(`https://my-mern-blog-n6yk.onrender.com/post/${id}/comments`)
             .then(res => res.json())
             .then(history => {
                 setComments(history);
@@ -38,7 +38,7 @@ export default function PostPage(){
 
         // 建立websocket连接，获取实时评论
         // 1 建立连接
-        const newSocket = io('http://localhost:4000');
+        const newSocket = io('https://my-mern-blog-n6yk.onrender.com');
         setSocket(newSocket);
         // 2 加入房间
         newSocket.emit('join_post', id);
@@ -68,7 +68,7 @@ export default function PostPage(){
         });
 
         try{
-            const response = await fetch(`http://localhost:4000/post/${id}/likes`, {
+            const response = await fetch(`https://my-mern-blog-n6yk.onrender.com/post/${id}/likes`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {'Content-Type': 'application/json'},
@@ -127,7 +127,7 @@ export default function PostPage(){
                      // 兼容本地云端照片
                      src={
                          postInfo.img.startsWith('http')
-                         ? postInfo.img : `http://localhost:4000/${postInfo.img}`
+                         ? postInfo.img : `https://my-mern-blog-n6yk.onrender.com/${postInfo.img}`
                     }
                      alt={postInfo.title}
                      className='w-full h-full object-cover'/>
