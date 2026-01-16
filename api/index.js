@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 const io = new Server(server,{
     cors:{
-        origin:"http://localhost:5173",
+        origin:"https://my-mern-blog-sigma.vercel.app/",
         credentials: true,
     }
 });
