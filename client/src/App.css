@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer components {
+    .input-primary{
+        @apply
+        block mb-4 w-full px-4 py-3
+        border border-gray-200 rounded-xl
+        bg-gray-50
+        focus:outline-none
+        focus:ring-2
+        focus:ring-blue-400
+        focus:border-transparent
+        transition-all
+        duration-300
+        shadow-sm
+    }
+    .button-primary {
+        @apply
+        w-full block bg-blue-600 text-white font-semibold rounded-xl px-6 py-3 mt-4
+        hover:bg-blue-700
+        active:scale-95
+        transition-all
+        shadow-md
+        hover:shadow-lg
+    }
+}
+@theme{
+    --font-sans: 'Inter', 'Noto Sans SC', sans-serif;
+}
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+        background-color: #e0f2fe;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        background-color: white;
+    }
+}
+
+.page-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.content-new{
+    animation: slide-in 0.8s ease-out forwards;
+}
+body{
+    @apply text-slate-900 antialiased;
+    background-color: #fcfcfc;
+}
