@@ -9,13 +9,14 @@ const {Server} = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({credentials:true, origin:"http://localhost:5173"}));
+app.use(cors({credentials:true, origin:"https://my-mern-blog-sigma.vercel.app"}));
 app.use(express.json());
 app.use(cookieParser());
 
 const io = new Server(server,{
     cors:{
-        origin:"https://my-mern-blog-sigma.vercel.app/",
+        origin:"https://my-mern-blog-sigma.vercel.app",
+        credentials: true,
         credentials: true,
     }
 });
