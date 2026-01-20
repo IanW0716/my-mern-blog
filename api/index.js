@@ -9,6 +9,12 @@ const {Server} = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
+
+// test
+app.get('/test', (req, res) => {
+    res.json('ok');
+});
+
 app.use(cors({credentials:true, origin:"https://my-mern-blog-sigma.vercel.app"}));
 app.use(express.json());
 app.use(cookieParser());
