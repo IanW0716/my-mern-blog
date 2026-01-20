@@ -7,6 +7,7 @@ const {Server} = require('socket.io');
 
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 
@@ -15,19 +16,20 @@ app.get('/test', (req, res) => {
     res.json('ok');
 });
 
-app.use(cors({credentials:true, origin:"https://my-mern-blog-sigma.vercel.app"}));
+const allowedOrigins = [
+    "https://my-mern-blog-sigma.vercel.app",
+    "https://www.gzw-blog.me",
+    "https://gzw-blog.me",
+    "https://www.gzw-blog.me",
+];
+
+app.use(cors({credentials:true, origin:allowedOrigins}));
 app.use(express.json());
 app.use(cookieParser());
 
 const io = new Server(server,{
     cors:{
-        origin:
-            [
-                "https://my-mern-blog-sigma.vercel.app",
-                "https://www.gzw-blog.me",
-                "https://gzw-blog.me",
-                "https://www.gzw-blog.me",
-            ],
+        origin: allowedOrigins,
         credentials: true,
     }
 });
@@ -109,7 +111,10 @@ app.post('/login',async (req,res) => {
         // 登录成功
         jwt.sign({username, id:userDoc._id}, secret, {}, (err, token)=>{
             if(err) throw err;
-            res.cookie('token', token).json({
+            res.cookie('token', token, {
+                sameSite: 'none',
+                secure: true,
+            }).json({
                 id: userDoc._id,
                 username,
             });
@@ -135,7 +140,10 @@ app.get('/profile', (req,res) => {
 })
 
 app.post('/logout', (req,res) => {
-    res.cookie('token','').json('ok');
+    res.cookie('token','', {
+        sameSite: 'none',
+        secure: true,
+    }).json('ok');
 })
 
 app.post('/post', uploadMiddleware.single('img'), async (req,res) => {
@@ -294,6 +302,6 @@ app.put('/post/:id/likes', async (req,res) => {
 //     console.log('服务器运行在端口：4000');
 // })
 const port = process.env.PORT || 4000;
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`服务器运行在端口：${port}`);
 })
