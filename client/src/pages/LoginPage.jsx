@@ -10,7 +10,7 @@ export default function LoginPage() {
     async function login(e){
         // form默认提交刷新页面，下面代码用来阻止发生
           e.preventDefault();
-          const response = await fetch('https://my-mern-blog-n6yk.onrender.com/login', {
+          const response = await fetch('https://api.gzw-blog.me/login', {
               method: 'POST',
               body: JSON.stringify({username, password}),
               headers: {'content-type': 'application/json'},

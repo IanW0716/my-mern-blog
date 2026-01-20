@@ -8,7 +8,7 @@ export default function Post({_id, title, summary, img, content, author, created
         hover:shadow-lg border border-transparent hover:border-gray-200
         shadow-sm group-hover:shadow-xl
         ">
-            <img src={img.startsWith('http') ? img:'https://my-mern-blog-n6yk.onrender.com/'+img}
+            <img src={img.startsWith('http') ? img:'https://api.gzw-blog.me/'+img}
                  alt=""
                  className="w-full h-full object-cover rounded-xl"
                  loading="lazy"/>

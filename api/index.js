@@ -114,6 +114,7 @@ app.post('/login',async (req,res) => {
             res.cookie('token', token, {
                 sameSite: 'none',
                 secure: true,
+                domain:'.gzw-blog.me'
             }).json({
                 id: userDoc._id,
                 username,
@@ -143,6 +144,7 @@ app.post('/logout', (req,res) => {
     res.cookie('token','', {
         sameSite: 'none',
         secure: true,
+        domain:'.gzw-blog.me'
     }).json('ok');
 })
 

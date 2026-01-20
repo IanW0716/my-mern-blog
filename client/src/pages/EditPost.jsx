@@ -12,7 +12,7 @@ export default function EditPost() {
 
     const {id} = useParams();
         useEffect(() => {
-            fetch('https://my-mern-blog-n6yk.onrender.com/post/'+id)
+            fetch('https://api.gzw-blog.me/post/'+id)
                 .then(res => res.json())
                 .then(postInfo => {
                     setTitle(postInfo.title);
@@ -28,7 +28,7 @@ export default function EditPost() {
         data.set("content", content);
         data.set("img", img);
         data.set('id',id);
-        const response = await fetch('https://my-mern-blog-n6yk.onrender.com/post', {
+        const response = await fetch('https://api.gzw-blog.me/post', {
             method: 'PUT',
             body: data,
             credentials: 'include',
