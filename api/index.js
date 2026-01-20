@@ -15,8 +15,13 @@ app.use(cookieParser());
 
 const io = new Server(server,{
     cors:{
-        origin:"https://my-mern-blog-sigma.vercel.app",
-        credentials: true,
+        origin:
+            [
+                "https://my-mern-blog-sigma.vercel.app",
+                "https://www.gzw-blog.me",
+                "https://gzw-blog.me",
+                "https://www.gzw-blog.me",
+            ],
         credentials: true,
     }
 });
