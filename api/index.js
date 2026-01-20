@@ -235,8 +235,8 @@ app.get('/post/:id/comments', async (req,res) => {
 function parseCookieString(cookieString){
     if(!cookieString) return {};
     return cookieString.split(';').reduce((acc, item) => {
-        const [key, value] = item.trim().split('=');
-        if(key && value){
+        const [key, val] = item.trim().split('=');
+        if(key && val){
             acc[key] = val;
         }
         return acc;
