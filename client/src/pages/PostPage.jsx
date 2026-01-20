@@ -38,7 +38,10 @@ export default function PostPage(){
 
         // 建立websocket连接，获取实时评论
         // 1 建立连接
-        const newSocket = io('https://my-mern-blog-n6yk.onrender.com');
+        const newSocket = io('https://my-mern-blog-n6yk.onrender.com',{
+            withCredentials: true,
+            transports:['websocket', 'polling'],
+        });
         setSocket(newSocket);
         // 2 加入房间
         newSocket.emit('join_post', id);

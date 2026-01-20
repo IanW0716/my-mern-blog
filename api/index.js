@@ -232,9 +232,16 @@ app.get('/post/:id/comments', async (req,res) => {
 })
 
 // websocket 实时评论
+function getTokenFromCookieString(cookieString){
+    if(!cookieString) return null;
+    const match = cookieString.match(/token=([^;]+)/);
+    return match ? match[1] : null;
+}
+
 io.on('connection', (socket) => {
     console.log('用户已连接：', socket.id);
-
+    const cookieString = socket.handshake.headers.cookie;
+    const token = getTokenFromCookieString(cookieString);
     // 1. 用户进入文章详情页时，加入该文章对应的“房间”
     socket.on('join_post', (postId)=>{
         socket.join(postId);
@@ -243,8 +250,10 @@ io.on('connection', (socket) => {
 
     // 2. 监听发送评论
     socket.on('send_comment', async (data)=>{
-        const {postId, content, token} = data;
-
+        const {postId, content} = data;
+        if(!token){
+            console.log('无Token，未登录');
+        }
         jwt.verify(token, secret, {}, async (err, info) => {
             if(err) {
                 console.log('JWT验证失败');
@@ -265,7 +274,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        console.log('用户断开链接');
+        console.log('用户断开连接接');
     });
 });
 
