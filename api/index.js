@@ -232,16 +232,26 @@ app.get('/post/:id/comments', async (req,res) => {
 })
 
 // websocket 实时评论
-function getTokenFromCookieString(cookieString){
-    if(!cookieString) return null;
-    const match = cookieString.match(/token=([^;]+)/);
-    return match ? match[1] : null;
+function parseCookieString(cookieString){
+    if(!cookieString) return {};
+    return cookieString.split(';').reduce((acc, item) => {
+        const [key, value] = item.trim().split('=');
+        if(key && value){
+            acc[key] = val;
+        }
+        return acc;
+    },{});
 }
 
 io.on('connection', (socket) => {
     console.log('用户已连接：', socket.id);
     const cookieString = socket.handshake.headers.cookie;
-    const token = getTokenFromCookieString(cookieString);
+    console.log(`[Socket连接] ID: ${socket.id}|Cookie长度：${cookieString?cookieString.length:0}`);
+    const cookies = parseCookieString(cookieString);
+    const token = cookies.token;
+    if(!token){
+        console.log(`❌ 警告: 用户 ${socket.id} 连接了但没有 Token (可能是未登录或Cookie被拦截)`);
+    }
     // 1. 用户进入文章详情页时，加入该文章对应的“房间”
     socket.on('join_post', (postId)=>{
         socket.join(postId);
@@ -253,6 +263,7 @@ io.on('connection', (socket) => {
         const {postId, content} = data;
         if(!token){
             console.log('无Token，未登录');
+            return;
         }
         jwt.verify(token, secret, {}, async (err, info) => {
             if(err) {

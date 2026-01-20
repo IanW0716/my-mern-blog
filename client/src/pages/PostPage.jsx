@@ -40,7 +40,10 @@ export default function PostPage(){
         // 1 建立连接
         const newSocket = io('https://my-mern-blog-n6yk.onrender.com',{
             withCredentials: true,
-            transports:['websocket', 'polling'],
+            transports:['polling','websocket'],
+            reconnection: true,
+            reconnectionAttempts: 5,
+
         });
         setSocket(newSocket);
         // 2 加入房间
