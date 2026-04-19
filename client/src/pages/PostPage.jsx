@@ -9,6 +9,7 @@ import {Link} from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import {io} from "socket.io-client";
 import { zhCN } from 'date-fns/locale';
+import {apiClient} from "../utils/api.js";
 
 export default function PostPage(){
     const [postInfo, setPostInfo] = useState(null);
@@ -19,6 +20,9 @@ export default function PostPage(){
     // 输入框的评论
     const [commentContent, setCommentContent] = useState("");
     const [socket, setSocket] = useState(null);
+    // loading 锁：防止点赞和发送评论的重复提交
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
+    const [isCommentLoading, setIsCommentLoading] = useState(false);
 
     useEffect(()=>{
         fetch(`https://api.gzw-blog.me/post/${id}`)
@@ -63,6 +67,8 @@ export default function PostPage(){
             alert('请先登录！');
             return;
         }
+        if(isLikeLoading) return; // 上一次请求没处理完，忽略本次点击
+
         const currentLikes = postInfo.likes || [];
         const isLiked = currentLikes.includes(userInfo.id);
 
@@ -73,10 +79,10 @@ export default function PostPage(){
             return {...prev, likes: newLikes};
         });
 
+        setIsLikeLoading(true);
         try{
-            const response = await fetch(`https://api.gzw-blog.me/post/${id}/likes`, {
+            const response = await apiClient(`/post/${id}/likes`, {
                 method: 'PUT',
-                credentials: 'include',
                 headers: {'Content-Type': 'application/json'},
             })
             if(!response.ok) throw new Error('点赞失败');
@@ -84,21 +90,22 @@ export default function PostPage(){
             console.error(err);
             setPostInfo(prev => ({...prev, likes:currentLikes}));
             alert("网络有点小问题，点赞失败😭")
+        } finally {
+            setIsLikeLoading(false);
         }
     }
     function handleSendComment(e){
         e.preventDefault();
-        // 内容为空或者未连接
-        if(!commentContent.trim()||!socket) return;
+        // 内容为空、未连接、或上一次发送还没解锁
+        if(!commentContent.trim() || !socket || isCommentLoading) return;
 
-        // websocket连接建立后 cookie无法直接从请求头获得
-        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+        setIsCommentLoading(true);
         socket.emit('send_comment', {
             postId: id,
             content: commentContent,
-            token: token,
         })
         setCommentContent('');
+        setTimeout(() => setIsCommentLoading(false), 500);
     }
 
     if(!postInfo) return '';
@@ -111,7 +118,10 @@ export default function PostPage(){
                  <p>{formatISO9075(new Date(postInfo.createdAt))}</p>
                  <div className='flex justify-center items-center gap-4 mt-2'>
                      <p>by@{postInfo.author?.username}</p>
-                     <button onClick={toggleLike} className='flex items-center gap-1 cursor-pointer hover:scale-110 transition-transform active:scale-95'>
+                     <button
+                         onClick={toggleLike}
+                         disabled={isLikeLoading}
+                         className={`flex items-center gap-1 hover:scale-110 transition-transform active:scale-95 ${isLikeLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                          {(postInfo.likes || []).includes(userInfo?.id)
                              ?(<HeartIconSolid className='size-6 text-red-500' />)
                              :(<HeartIconOutline className='size-6 text-gray-500 hover:text-red-500' />)}
@@ -152,7 +162,12 @@ export default function PostPage(){
                             className='input-primary h-24'
                             placeholder='请撰写你的评论...'
                         />
-                         <button className='button-primary w-24 mx-auto'>发送</button>
+                         <button
+                            disabled={isCommentLoading}
+                            className={`button-primary w-24 mx-auto ${isCommentLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {isCommentLoading ? '发送中...' : '发送'}
+                        </button>
                      </form>
                  ):(
                      <div className='mb-10 text-center text-gray-500'>

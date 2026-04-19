@@ -1,14 +1,38 @@
 import {useState, useEffect, useRef} from 'react';
 
-export function useThrottle(value, delay=500) {
-    const [throttleValue, setThrottleValue] = useState(value);
-    const lastValue = useRef(0);
-    useEffect(() => {
-        const now = Date.now();
-        if(now - lastValue.current >= delay) {
-            setThrottleValue(value);
-            lastValue.current = now;
+function useThrottle(value, delay){
+    const [tValue, setTvalue] = useState(value);
+    const timer = useRef(null);
+    const lastTime = useRef(0);
+    const savedValue = useRef(value);
+
+    useEffect(()=>{
+        let remain = delay - (Date.now()-lastTime.current);
+        if(remain <= 0){
+            setTvalue(value);
+            lastTime.current = Date.now();
         }
-    }, [value,delay]);
-    return throttleValue;
+        else{
+            savedValue.current = value;
+            if(!timer.current){
+                timer.current = setTimeout(()=>{
+                    setTvalue(savedValue.current);
+                    lastTime.current = Date.now();
+                    timer.current = null;
+                }, remain);
+            }
+        }
+
+    },[value, delay]);
+
+    useEffect(()=>{
+        return ()=>{
+            if(timer.current){
+                clearTimeout(timer.current);
+                timer.current = null;
+            }
+        }
+    },[])
+
+    return tValue;
 }

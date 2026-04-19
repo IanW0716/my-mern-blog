@@ -61,6 +61,7 @@ const jwt = require('jsonwebtoken');
 const secret =  'asdasdasdasdsa';
 
 
+
 // 文件系统处理命名
 // const fs = require('fs');
 
@@ -112,10 +113,12 @@ app.post('/login',async (req,res) => {
         jwt.sign({username, id:userDoc._id}, secret, {}, (err, token)=>{
             if(err) throw err;
             res.cookie('token', token, {
-                sameSite: 'none',
+                sameSite: 'lax',
                 secure: true,
+                httpOnly: true,
                 domain:'.gzw-blog.me'
-            }).json({
+            });
+            res.json({
                 id: userDoc._id,
                 username,
             });
@@ -142,10 +145,12 @@ app.get('/profile', (req,res) => {
 
 app.post('/logout', (req,res) => {
     res.cookie('token','', {
-        sameSite: 'none',
+        sameSite: 'lax',
         secure: true,
+        httpOnly: true,
         domain:'.gzw-blog.me'
-    }).json('ok');
+    });
+    res.json('ok');
 })
 
 app.post('/post', uploadMiddleware.single('img'), async (req,res) => {
@@ -234,23 +239,14 @@ app.get('/post/:id/comments', async (req,res) => {
 })
 
 // websocket 实时评论
-function parseCookieString(cookieString){
-    if(!cookieString) return {};
-    return cookieString.split(';').reduce((acc, item) => {
-        const [key, val] = item.trim().split('=');
-        if(key && val){
-            acc[key] = val;
-        }
-        return acc;
-    },{});
-}
+io.use((socket, next) => {
+    cookieParser()(socket.handshake, null, next);
+});
 
 io.on('connection', (socket) => {
     console.log('用户已连接：', socket.id);
-    const cookieString = socket.handshake.headers.cookie;
-    console.log(`[Socket连接] ID: ${socket.id}|Cookie长度：${cookieString?cookieString.length:0}`);
-    const cookies = parseCookieString(cookieString);
-    const token = cookies.token;
+    const token = socket.handshake.cookies?.token;
+    console.log(`[Socket连接] ID: ${socket.id}|Token是否存在：${!!token}`);
     if(!token){
         console.log(`❌ 警告: 用户 ${socket.id} 连接了但没有 Token (可能是未登录或Cookie被拦截)`);
     }
@@ -263,11 +259,12 @@ io.on('connection', (socket) => {
     // 2. 监听发送评论
     socket.on('send_comment', async (data)=>{
         const {postId, content} = data;
-        if(!token){
+        const currentToken = socket.handshake.cookies?.token;
+        if(!currentToken){
             console.log('无Token，未登录');
             return;
         }
-        jwt.verify(token, secret, {}, async (err, info) => {
+        jwt.verify(currentToken, secret, {}, async (err, info) => {
             if(err) {
                 console.log('JWT验证失败');
                 return;

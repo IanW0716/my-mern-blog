@@ -1,6 +1,7 @@
 import {Link, Navigate} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from './UserContext.jsx';
+import {apiClient} from "./utils/api.js";
 
 export default function Header(){
     const {userInfo, setUserInfo} = useContext(UserContext);
@@ -13,9 +14,8 @@ export default function Header(){
             })
         })
     }, []);
-    function logout(){
-        fetch('https://api.gzw-blog.me/logout',{
-            credentials: "include",
+    async function logout(){
+        await apiClient('/logout',{
             method: "POST",
         })
         setUserInfo(null);

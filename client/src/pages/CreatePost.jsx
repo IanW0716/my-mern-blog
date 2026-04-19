@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {Navigate} from "react-router-dom";
 import Editor from "../Editor.jsx";
+import {apiClient} from "../utils/api.js";
 
 export default function CreatePost(){
     const inputClass = "block mb-1 w-full px-[5px] py-[7px] border-[1px] border-solid rounded-xl border-gray-200 bg-gray-50";
@@ -17,10 +18,9 @@ export default function CreatePost(){
         data.set("summary", summary);
         data.set("content", content);
         data.set("img", img);
-        const response = await fetch('https://api.gzw-blog.me/post', {
+        const response = await apiClient('/post', {
             method: 'POST',
             body: data,
-            credentials: 'include',
         })
         if (response.ok) {
             // alert('发布成功！');

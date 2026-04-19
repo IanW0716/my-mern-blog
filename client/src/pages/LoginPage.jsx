@@ -1,6 +1,7 @@
 import {useContext, useState} from "react";
 import {Navigate} from "react-router-dom";
 import {UserContext} from '../UserContext.jsx'
+import {apiClient} from "../utils/api.js";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -10,11 +11,10 @@ export default function LoginPage() {
     async function login(e){
         // form默认提交刷新页面，下面代码用来阻止发生
           e.preventDefault();
-          const response = await fetch('https://api.gzw-blog.me/login', {
+          const response = await apiClient('/login', {
               method: 'POST',
               body: JSON.stringify({username, password}),
               headers: {'content-type': 'application/json'},
-              credentials: 'include',
           });
 
           if(response.ok){

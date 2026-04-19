@@ -1,6 +1,7 @@
 import Editor from "../Editor.jsx";
 import {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
+import {apiClient} from "../utils/api.js";
 
 export default function EditPost() {
     const inputClass = "block mb-1 w-full px-[5px] py-[7px] border-[1px] border-solid rounded-xl border-gray-200 bg-gray-50";
@@ -28,10 +29,9 @@ export default function EditPost() {
         data.set("content", content);
         data.set("img", img);
         data.set('id',id);
-        const response = await fetch('https://api.gzw-blog.me/post', {
+        const response = await apiClient('/post', {
             method: 'PUT',
             body: data,
-            credentials: 'include',
         })
         if (response.ok) {
             setRedirect(true);
