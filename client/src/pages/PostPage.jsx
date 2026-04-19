@@ -146,7 +146,10 @@ export default function PostPage(){
                          ? postInfo.img : `https://api.gzw-blog.me/${postInfo.img}`
                     }
                      alt={postInfo.title}
-                     className='w-full h-full object-cover'/>
+                     className='w-full h-full object-cover'
+                     width="800"
+                     height="400"
+                 />
              </div>
              <div className='"prose prose-lg max-w-none text-gray-800"'>
                  <ReactMarkdown>{postInfo.content}</ReactMarkdown>

@@ -8,10 +8,16 @@ export default function Post({_id, title, summary, img, content, author, created
         hover:shadow-lg border border-transparent hover:border-gray-200
         shadow-sm group-hover:shadow-xl
         ">
-            <img src={img.startsWith('http') ? img:'https://api.gzw-blog.me/'+img}
-                 alt=""
-                 className="w-full h-full object-cover rounded-xl"
-                 loading="lazy"/>
+            <div className="aspect-[4/3] bg-gray-200 rounded-xl overflow-hidden">
+                <img
+                    src={img.startsWith('http') ? img : 'https://api.gzw-blog.me/' + img}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    width="400"
+                    height="300"
+                />
+            </div>
             <div>
                 <Link to={`/post/${_id}`}>
                     <h2 className="m-0 text-[1.8rem]">{title}</h2>
