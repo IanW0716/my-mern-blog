@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/cli": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",
+    "@vercel/speed-insights": "^2.0.0",
     "@vitejs/plugin-react": "^4.7.0",
     "date-fns": "^4.1.0",
     "md-editor-rt": "^6.3.1",

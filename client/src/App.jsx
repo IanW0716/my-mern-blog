@@ -5,6 +5,7 @@ import IndexPage from "./pages/IndexPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import {UserContextProvider} from "./UserContext.jsx";
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const CreatePost = lazy(() => import("./pages/CreatePost.jsx"));
 const PostPage = lazy(() => import("./pages/PostPage.jsx"));
@@ -27,6 +28,7 @@ function App() {
                   </Routes>
               </Suspense>
           </UserContextProvider>
+          <SpeedInsights />
       </>
   )
 }
